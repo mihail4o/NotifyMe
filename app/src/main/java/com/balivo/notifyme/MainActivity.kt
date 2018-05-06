@@ -44,6 +44,12 @@ class MainActivity : AppCompatActivity() {
                 .setContentText("This is your notification text.")
                 .setSmallIcon(R.drawable.ic_android)
                 .setContentIntent(notificationPendingIntent)
+                /*
+                Note: The high priority notification will not drop down in front of the active screen
+                 unless both the priority and the defaults are set. The priority alone is not enough.
+                 */
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setDefaults(NotificationCompat.DEFAULT_ALL)
 
         val myNotification = notifyBuilder.build()
         mNotifyManager.notify(NOTIFICATION_ID, myNotification)
