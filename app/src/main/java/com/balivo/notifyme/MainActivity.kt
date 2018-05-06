@@ -15,6 +15,9 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mNotifyManager: NotificationManager
     private val NOTIFICATION_ID : Int = 1
+    private lateinit var mNotifyButton : Button
+    private lateinit var mUpdateButton : Button
+    private lateinit var mCancelButton : Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,7 +25,7 @@ class MainActivity : AppCompatActivity() {
 
         mNotifyManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
-        val mNotifyButton = findViewById(R.id.notify) as Button
+        mNotifyButton = findViewById(R.id.notify) as Button
         mNotifyButton.setOnClickListener(object: View.OnClickListener {
 
             override fun onClick(p0: View?) {
@@ -31,7 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-        val mUpdateButton = findViewById(R.id.update) as Button
+        mUpdateButton = findViewById(R.id.update) as Button
         mUpdateButton.setOnClickListener(object: View.OnClickListener {
 
             override fun onClick(p0: View?) {
@@ -40,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         })
 
-        val mCancelButton = findViewById(R.id.cancel) as Button
+        mCancelButton = findViewById(R.id.cancel) as Button
         mCancelButton.setOnClickListener(object: View.OnClickListener {
 
             override fun onClick(p0: View?) {
@@ -48,6 +51,10 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+
+        mNotifyButton.setEnabled(true)
+        mUpdateButton.setEnabled(false)
+        mCancelButton.setEnabled(false)
     }
 
 
@@ -72,6 +79,10 @@ class MainActivity : AppCompatActivity() {
 
         val myNotification = notifyBuilder.build()
         mNotifyManager.notify(NOTIFICATION_ID, myNotification)
+
+        mNotifyButton.setEnabled(false)
+        mUpdateButton.setEnabled(true)
+        mCancelButton.setEnabled(true)
     }
 
 
@@ -99,9 +110,17 @@ class MainActivity : AppCompatActivity() {
                         .setBigContentTitle("Notification Updated!"))
 
         mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build())
+
+        mNotifyButton.setEnabled(false)
+        mUpdateButton.setEnabled(false)
+        mCancelButton.setEnabled(true)
     }
 
     fun cancelNotification() {
         mNotifyManager.cancel(NOTIFICATION_ID)
+
+        mNotifyButton.setEnabled(true)
+        mUpdateButton.setEnabled(false)
+        mCancelButton.setEnabled(false)
     }
 }
