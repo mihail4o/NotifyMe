@@ -26,14 +26,18 @@ class MainActivity : AppCompatActivity() {
     private val NOTIFICATION_GUIDE_URL = "https://developer.android.com/design/patterns/notifications.html"
     val ACTION_UPDATE_NOTIFICATION =
             "com.balivo.notifyme.ACTION_UPDATE_NOTIFICATION"
+    val ACTION_DELETE_NOTIFICATION =
+            "com.balivo.notifyme.ACTION_DELETE_NOTIFICATION"
 
     val mReceiver = NotificationReceiver()
+    val mDeleteReceiver = DeleteNotificationReceiver()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         registerReceiver(mReceiver, IntentFilter(ACTION_UPDATE_NOTIFICATION))
+        registerReceiver(mDeleteReceiver, IntentFilter(ACTION_DELETE_NOTIFICATION))
 
         mNotifyManager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
 
@@ -86,6 +90,10 @@ class MainActivity : AppCompatActivity() {
         val updatePendingIntent = PendingIntent.getBroadcast(this,
                 NOTIFICATION_ID, updateIntent, PendingIntent.FLAG_ONE_SHOT)
 
+        val deleteIntent = Intent(ACTION_DELETE_NOTIFICATION)
+        val deletePendingIntent = PendingIntent.getBroadcast(this,
+                NOTIFICATION_ID, deleteIntent, PendingIntent.FLAG_ONE_SHOT)
+
         val notifyBuilder = NotificationCompat.Builder(this)
                 .setContentTitle("You've been notified!")
                 .setContentText("This is your notification text.")
@@ -99,6 +107,7 @@ class MainActivity : AppCompatActivity() {
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
                 .addAction(R.drawable.ic_learn_more,"Learn More", learnMorePendingIntent)
                 .addAction(R.drawable.ic_update, "Update", updatePendingIntent)
+                .setDeleteIntent(deletePendingIntent)
 
         val myNotification = notifyBuilder.build()
         mNotifyManager.notify(NOTIFICATION_ID, myNotification)
@@ -118,6 +127,9 @@ class MainActivity : AppCompatActivity() {
         val learnMorePendingIntent = PendingIntent.getActivity(this,
                 NOTIFICATION_ID, learnMoreIntent, PendingIntent.FLAG_ONE_SHOT)
 
+        val deleteIntent = Intent(ACTION_DELETE_NOTIFICATION)
+        val deletePendingIntent = PendingIntent.getBroadcast(this,
+                NOTIFICATION_ID, deleteIntent, PendingIntent.FLAG_ONE_SHOT)
 
         val notificationIntent = Intent(this, MainActivity::class.java)
         val notificationPendingIntent = PendingIntent.getActivity(this,
@@ -137,6 +149,7 @@ class MainActivity : AppCompatActivity() {
                         .bigPicture(androidImage)
                         .setBigContentTitle("Notification Updated!"))
                 .addAction(R.drawable.ic_learn_more,"Learn More", learnMorePendingIntent)
+                .setDeleteIntent(deletePendingIntent)
 
         mNotifyManager.notify(NOTIFICATION_ID, notifyBuilder.build())
 
@@ -159,8 +172,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    inner class DeleteNotificationReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            cancelNotification()
+        }
+    }
+
     override fun onDestroy() {
         unregisterReceiver(mReceiver)
+        unregisterReceiver(mDeleteReceiver)
         super.onDestroy()
     }
 }
